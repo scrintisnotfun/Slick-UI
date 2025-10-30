@@ -159,7 +159,7 @@ local function createPremiumPopup(screenGui, mainFrame)
 	
 	-- Copy Discord link functionality (placeholder link)
 	discordBtn.MouseButton1Click:Connect(function()
-		local discordLink = "https://discord.gg/yourserver"
+		local discordLink = "https://discord.gg/cE6tjPRzjx"
 		setclipboard(discordLink)
 		discordBtn.Text = "Copied!"
 		task.wait(1.5)
