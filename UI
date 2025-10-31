@@ -226,8 +226,7 @@ function WindUI:CreateWindow(options)
 	self.MainFrame.Name = randomName()
 	self.MainFrame.Size = UDim2.new(0, size[1], 0, size[2])
 	self.MainFrame.Position = UDim2.new(0.5, -size[1]/2, 0.5, -size[2]/2)
-	-- Lightened main frame with blue-gray tint instead of pure black
-	self.MainFrame.BackgroundColor3 = Color3.fromRGB(40, 42, 48)
+	self.MainFrame.BackgroundColor3 = Color3.fromRGB(32, 32, 32)
 	self.MainFrame.BorderSizePixel = 0
 	self.MainFrame.ClipsDescendants = false
 	self.MainFrame.Active = true
@@ -243,8 +242,7 @@ function WindUI:CreateWindow(options)
 	local titleBar = Instance.new("Frame")
 	titleBar.Name = randomName()
 	titleBar.Size = UDim2.new(1, 0, 0, 50)
-	-- Lightened title bar with blue-gray tint
-	titleBar.BackgroundColor3 = Color3.fromRGB(45, 47, 54)
+	titleBar.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
 	titleBar.BorderSizePixel = 0
 	titleBar.Active = true
 	titleBar.Parent = self.MainFrame
@@ -258,8 +256,7 @@ function WindUI:CreateWindow(options)
 	titleFix.Name = randomName()
 	titleFix.Size = UDim2.new(1, 0, 0, 12)
 	titleFix.Position = UDim2.new(0, 0, 1, -12)
-	-- Updated to match new title bar color
-	titleFix.BackgroundColor3 = Color3.fromRGB(45, 47, 54)
+	titleFix.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
 	titleFix.BorderSizePixel = 0
 	titleFix.Parent = titleBar
 	
@@ -371,8 +368,7 @@ function WindUI:CreateWindow(options)
 	self.TabContainer.Name = randomName()
 	self.TabContainer.Size = UDim2.new(0, 140, 1, -60)
 	self.TabContainer.Position = UDim2.new(0, 10, 0, 60)
-	-- Lightened tab container with blue-gray tint
-	self.TabContainer.BackgroundColor3 = Color3.fromRGB(45, 47, 54)
+	self.TabContainer.BackgroundColor3 = Color3.fromRGB(38, 38, 38)
 	self.TabContainer.BorderSizePixel = 0
 	self.TabContainer.ClipsDescendants = true
 	self.TabContainer.ScrollBarThickness = 0
@@ -577,8 +573,8 @@ function WindUI:CreateTab(options)
 	local tabButton = Instance.new("TextButton")
 	tabButton.Name = randomName()
 	tabButton.Size = UDim2.new(1, 0, 0, 45)
-	-- Lightened tab button with blue-gray tint
-	tabButton.BackgroundColor3 = Color3.fromRGB(50, 52, 60)
+	-- Reverted locked tab to normal background color
+	tabButton.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
 	tabButton.Text = ""
 	tabButton.BorderSizePixel = 0
 	tabButton.AutoButtonColor = false
@@ -690,8 +686,8 @@ function WindUI:CreateTab(options)
 		end
 		
 		for _, t in pairs(self.Tabs) do
-			-- Updated inactive tab color to lighter blue-gray
-			t.Button.BackgroundColor3 = Color3.fromRGB(50, 52, 60)
+			-- Updated to use normal colors for locked tabs
+			t.Button.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
 			-- Only update icon color if icon exists
 			if t.Icon then
 				t.Icon.TextColor3 = Color3.fromRGB(200, 200, 200)
@@ -700,8 +696,7 @@ function WindUI:CreateTab(options)
 			t.Content.Visible = false
 		end
 		
-		-- Updated active tab color to brighter blue matching key-link-ui
-		tabButton.BackgroundColor3 = Color3.fromRGB(70, 130, 255)
+		tabButton.BackgroundColor3 = Color3.fromRGB(0, 120, 215)
 		-- Only update icon color if icon exists
 		if iconLabel then
 			iconLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -714,15 +709,13 @@ function WindUI:CreateTab(options)
 	-- Only show hover effect if tab is not locked
 	tabButton.MouseEnter:Connect(function()
 		if not locked and self.CurrentTab ~= name then
-			-- Updated hover color to slightly lighter blue-gray
-			tabButton.BackgroundColor3 = Color3.fromRGB(60, 62, 70)
+			tabButton.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
 		end
 	end)
 	
 	tabButton.MouseLeave:Connect(function()
 		if not locked and self.CurrentTab ~= name then
-			-- Revert to lighter blue-gray
-			tabButton.BackgroundColor3 = Color3.fromRGB(50, 52, 60)
+			tabButton.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
 		end
 	end)
 	
@@ -730,8 +723,7 @@ function WindUI:CreateTab(options)
 	
 	-- Auto-select first tab that is not locked
 	if not self.CurrentTab and not locked then
-		-- Updated first tab active color
-		tabButton.BackgroundColor3 = Color3.fromRGB(70, 130, 255)
+		tabButton.BackgroundColor3 = Color3.fromRGB(0, 120, 215)
 		-- Only update icon color if icon exists
 		if iconLabel then
 			iconLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -826,8 +818,8 @@ function createButton(options, parent)
 	local button = Instance.new("TextButton")
 	button.Name = randomName()
 	button.Size = UDim2.new(0, 200, 0, 38)
-	-- Updated button colors to match key-link-ui blue
-	button.BackgroundColor3 = locked and Color3.fromRGB(60, 60, 60) or Color3.fromRGB(70, 130, 255)
+	-- Different color for locked buttons
+	button.BackgroundColor3 = locked and Color3.fromRGB(60, 60, 60) or Color3.fromRGB(0, 120, 215)
 	button.Text = text
 	-- Dimmed text for locked buttons
 	button.TextColor3 = locked and Color3.fromRGB(120, 120, 120) or Color3.fromRGB(255, 255, 255)
@@ -869,13 +861,11 @@ function createButton(options, parent)
 	else
 		-- Only add hover/click effects if button is not locked
 		button.MouseEnter:Connect(function()
-			-- Updated hover color to slightly darker blue
-			button.BackgroundColor3 = Color3.fromRGB(80, 140, 255)
+			button.BackgroundColor3 = Color3.fromRGB(0, 100, 190)
 		end)
 		
 		button.MouseLeave:Connect(function()
-			-- Revert to original blue
-			button.BackgroundColor3 = Color3.fromRGB(70, 130, 255)
+			button.BackgroundColor3 = Color3.fromRGB(0, 120, 215)
 		end)
 		
 		button.MouseButton1Down:Connect(function()
@@ -914,8 +904,8 @@ function createToggle(options, parent)
 	local toggleFrame = Instance.new("Frame")
 	toggleFrame.Name = randomName()
 	toggleFrame.Size = UDim2.new(1, 0, 0, 40)
-	-- Lightened toggle frame with blue-gray tint
-	toggleFrame.BackgroundColor3 = Color3.fromRGB(50, 52, 60)
+	-- Reverted to normal background color for locked toggles
+	toggleFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
 	toggleFrame.BorderSizePixel = 0
 	toggleFrame.ZIndex = 2
 	toggleFrame.Parent = parent
@@ -999,8 +989,8 @@ function createToggle(options, parent)
 		local tweenInfo = TweenInfo.new(animate and 0.2 or 0, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
 		
 		if toggled then
-			-- Updated toggle active color to brighter blue
-			TweenService:Create(toggleButton, tweenInfo, {BackgroundColor3 = Color3.fromRGB(70, 130, 255)}):Play()
+			-- Normal color for toggle when on
+			TweenService:Create(toggleButton, tweenInfo, {BackgroundColor3 = Color3.fromRGB(0, 120, 215)}):Play()
 			TweenService:Create(toggleCircle, tweenInfo, {Position = UDim2.new(1, -22, 0.5, -10)}):Play()
 		else
 			TweenService:Create(toggleButton, tweenInfo, {BackgroundColor3 = Color3.fromRGB(60, 60, 60)}):Play()
@@ -1040,8 +1030,7 @@ function createSlider(options, parent)
 	local sliderFrame = Instance.new("Frame")
 	sliderFrame.Name = randomName()
 	sliderFrame.Size = UDim2.new(1, 0, 0, 55)
-	-- Lightened slider frame with blue-gray tint
-	sliderFrame.BackgroundColor3 = Color3.fromRGB(50, 52, 60)
+	sliderFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
 	sliderFrame.BorderSizePixel = 0
 	sliderFrame.ZIndex = 2
 	sliderFrame.Parent = parent
@@ -1070,8 +1059,7 @@ function createSlider(options, parent)
 	valueLabel.Position = UDim2.new(1, -60, 0, 8)
 	valueLabel.BackgroundTransparency = 1
 	valueLabel.Text = tostring(default)
-	-- Updated value label color to brighter blue
-	valueLabel.TextColor3 = Color3.fromRGB(70, 130, 255)
+	valueLabel.TextColor3 = Color3.fromRGB(0, 120, 215)
 	valueLabel.TextSize = 15
 	valueLabel.Font = Enum.Font.GothamBold
 	valueLabel.TextXAlignment = Enum.TextXAlignment.Right
@@ -1103,8 +1091,7 @@ function createSlider(options, parent)
 	local sliderFill = Instance.new("Frame")
 	sliderFill.Name = randomName()
 	sliderFill.Size = UDim2.new((default - min) / (max - min), 0, 1, 0)
-	-- Updated slider fill to brighter blue
-	sliderFill.BackgroundColor3 = Color3.fromRGB(70, 130, 255)
+	sliderFill.BackgroundColor3 = Color3.fromRGB(0, 120, 215)
 	sliderFill.BorderSizePixel = 0
 	sliderFill.ZIndex = 3
 	sliderFill.Parent = sliderTrack
@@ -1186,8 +1173,7 @@ function createDropdown(options, parent)
 	local dropdownFrame = Instance.new("Frame")
 	dropdownFrame.Name = randomName()
 	dropdownFrame.Size = UDim2.new(1, 0, 0, 40)
-	-- Lightened dropdown frame with blue-gray tint
-	dropdownFrame.BackgroundColor3 = Color3.fromRGB(50, 52, 60)
+	dropdownFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
 	dropdownFrame.BorderSizePixel = 0
 	dropdownFrame.ClipsDescendants = false
 	dropdownFrame.ZIndex = 200
@@ -1235,14 +1221,12 @@ function createDropdown(options, parent)
 	optionsFrame.Name = randomName()
 	optionsFrame.Size = UDim2.new(1, 0, 0, 0)
 	optionsFrame.Position = UDim2.new(0, 0, 1, 5)
-	-- Lightened options frame with blue-gray tint
-	optionsFrame.BackgroundColor3 = Color3.fromRGB(50, 52, 60)
+	optionsFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
 	optionsFrame.BorderSizePixel = 0
 	optionsFrame.Visible = false
 	optionsFrame.ClipsDescendants = true
 	optionsFrame.ScrollBarThickness = 4
-	-- Updated scrollbar color to brighter blue
-	optionsFrame.ScrollBarImageColor3 = Color3.fromRGB(70, 130, 255)
+	optionsFrame.ScrollBarImageColor3 = Color3.fromRGB(0, 120, 215)
 	optionsFrame.ZIndex = 300
 	optionsFrame.ScrollingEnabled = true
 	optionsFrame.Parent = dropdownFrame
@@ -1304,8 +1288,7 @@ function createDropdown(options, parent)
 		local optionButton = Instance.new("TextButton")
 		optionButton.Name = randomName()
 		optionButton.Size = UDim2.new(1, 0, 0, 35)
-		-- Lightened option button with blue-gray tint
-		optionButton.BackgroundColor3 = Color3.fromRGB(50, 52, 60)
+		optionButton.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
 		optionButton.Text = option
 		optionButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 		optionButton.TextSize = 14
@@ -1316,13 +1299,11 @@ function createDropdown(options, parent)
 		optionButton.Parent = optionsFrame
 		
 		optionButton.MouseEnter:Connect(function()
-			-- Updated hover color to brighter blue
-			optionButton.BackgroundColor3 = Color3.fromRGB(70, 130, 255)
+			optionButton.BackgroundColor3 = Color3.fromRGB(0, 120, 215)
 		end)
 		
 		optionButton.MouseLeave:Connect(function()
-			-- Revert to lighter blue-gray
-			optionButton.BackgroundColor3 = Color3.fromRGB(50, 52, 60)
+			optionButton.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
 		end)
 		
 		optionButton.MouseButton1Click:Connect(function()
