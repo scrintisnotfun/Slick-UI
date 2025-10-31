@@ -394,6 +394,11 @@ function WindUI:CreateWindow(options)
 	tabLayout.Padding = UDim.new(0, 6)
 	tabLayout.Parent = self.TabContainer
 	
+	-- Added automatic canvas size update for unlimited tabs
+	tabLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+		self.TabContainer.CanvasSize = UDim2.new(0, 0, 0, tabLayout.AbsoluteContentSize.Y + 20)
+	end)
+	
 	local tabPadding = Instance.new("UIPadding")
 	tabPadding.Name = randomName()
 	tabPadding.PaddingTop = UDim.new(0, 10)
@@ -1349,4 +1354,3 @@ end
 
 -- Return library table for loadstring usage
 return WindUI
-</merged_code
