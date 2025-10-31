@@ -363,10 +363,11 @@ function WindUI:CreateWindow(options)
 	floatingLabel.ZIndex = 2
 	floatingLabel.Parent = floatingBtn
 	
-	-- Tab Container
+-- Tab Container
 	self.TabContainer = Instance.new("ScrollingFrame")
 	self.TabContainer.Name = randomName()
-	self.TabContainer.Size = UDim2.new(0, 140, 1, -60)
+	-- increased width from 140 to 180 to accommodate more tab text
+	self.TabContainer.Size = UDim2.new(0, 180, 1, -60)
 	self.TabContainer.Position = UDim2.new(0, 10, 0, 60)
 	self.TabContainer.BackgroundColor3 = Color3.fromRGB(38, 38, 38)
 	self.TabContainer.BorderSizePixel = 0
@@ -404,13 +405,15 @@ function WindUI:CreateWindow(options)
 	-- Tab Content Container
 	self.TabContentContainer = Instance.new("Frame")
 	self.TabContentContainer.Name = randomName()
-	self.TabContentContainer.Size = UDim2.new(1, -160, 1, -70)
-	self.TabContentContainer.Position = UDim2.new(0, 155, 0, 60)
+	-- adjusted width from -160 to -200 to account for wider tab container
+	self.TabContentContainer.Size = UDim2.new(1, -200, 1, -70)
+	self.TabContentContainer.Position = UDim2.new(0, 195, 0, 60)
 	self.TabContentContainer.BackgroundTransparency = 1
 	self.TabContentContainer.BorderSizePixel = 0
 	self.TabContentContainer.ClipsDescendants = true
 	self.TabContentContainer.ZIndex = 5
 	self.TabContentContainer.Parent = self.MainFrame
+
 	
 	-- Dragging for Main Frame
 	local dragging = false
