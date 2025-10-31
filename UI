@@ -570,30 +570,20 @@ function WindUI:CreateTab(options)
 	-- Added Locked parameter for locked tabs
 	local locked = options.Locked or false
 	
--- Tabs Buttons Container (Scrolling)
-self.TabButtonContainer = Instance.new("ScrollingFrame")
-self.TabButtonContainer.Name = randomName()
-self.TabButtonContainer.Size = UDim2.new(0, 150, 1, -70) -- adjust as needed
-self.TabButtonContainer.Position = UDim2.new(0, 5, 0, 60)  -- adjust as needed
-self.TabButtonContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 30) -- example color
-self.TabButtonContainer.BorderSizePixel = 0
-self.TabButtonContainer.ScrollBarThickness = 6
-self.TabButtonContainer.CanvasSize = UDim2.new(0, 0, 0, 0) -- dynamically updated later
-self.TabButtonContainer.ClipsDescendants = true
-self.TabButtonContainer.Parent = self.MainFrame
-
--- Add UIListLayout for automatic stacking
-local listLayout = Instance.new("UIListLayout")
-listLayout.Name = "TabListLayout"
-listLayout.SortOrder = Enum.SortOrder.LayoutOrder
-listLayout.Padding = UDim.new(0, 5)
-listLayout.Parent = self.TabButtonContainer
-
--- Optional: connect CanvasSize to content
-listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-    self.TabButtonContainer.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y)
-end)
-
+	local tabButton = Instance.new("TextButton")
+	tabButton.Name = randomName()
+	tabButton.Size = UDim2.new(1, 0, 0, 45)
+	-- Reverted locked tab to normal background color
+	tabButton.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+	tabButton.Text = ""
+	tabButton.BorderSizePixel = 0
+	tabButton.AutoButtonColor = false
+	tabButton.ZIndex = 11
+	
+	local corner = Instance.new("UICorner")
+	corner.Name = randomName()
+	corner.CornerRadius = UDim.new(0, 8)
+	corner.Parent = tabButton
 	
 	-- Only create icon label if icon exists
 	local iconLabel
