@@ -1,7 +1,3 @@
--- Wind UI Library - Loadstring Compatible
--- Usage: local WindUI = loadstring(game:HttpGet("your-url-here"))()
--- Then: local window = WindUI:CreateWindow({Title = "My UI", Size = UDim2.fromOffset(600, 350)})
-
 local WindUI = {}
 WindUI.__index = WindUI
 
@@ -67,7 +63,8 @@ local function createPremiumPopup(screenGui, mainFrame)
 	-- Position relative to MainFrame center instead of screen center
 	local mainFrameCenter = mainFrame.AbsolutePosition + (mainFrame.AbsoluteSize / 2)
 	popup.Position = UDim2.new(0, mainFrameCenter.X - 175, 0, mainFrameCenter.Y - 100)
-	popup.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+	-- Updated popup to slate theme
+	popup.BackgroundColor3 = Color3.fromRGB(38, 38, 42)
 	popup.BorderSizePixel = 0
 	popup.ZIndex = 1001
 	popup.Parent = backdrop
@@ -127,7 +124,8 @@ local function createPremiumPopup(screenGui, mainFrame)
 	closeBtn.Name = "CloseButton"
 	closeBtn.Size = UDim2.new(0, 150, 0, 38)
 	closeBtn.Position = UDim2.new(1, -170, 1, -55)
-	closeBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+	-- Updated close button to slate theme
+	closeBtn.BackgroundColor3 = Color3.fromRGB(48, 48, 52)
 	closeBtn.Text = "Close"
 	closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 	closeBtn.TextSize = 14
@@ -136,7 +134,7 @@ local function createPremiumPopup(screenGui, mainFrame)
 	closeBtn.AutoButtonColor = false
 	closeBtn.ZIndex = 1002
 	closeBtn.Parent = popup
-	
+
 	local closeCorner = Instance.new("UICorner")
 	closeCorner.Name = "CloseCorner"
 	closeCorner.CornerRadius = UDim.new(0, 8)
@@ -152,16 +150,17 @@ local function createPremiumPopup(screenGui, mainFrame)
 	end)
 	
 	closeBtn.MouseEnter:Connect(function()
-		closeBtn.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+		-- Updated close hover
+		closeBtn.BackgroundColor3 = Color3.fromRGB(58, 58, 62)
 	end)
 	
 	closeBtn.MouseLeave:Connect(function()
-		closeBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+		closeBtn.BackgroundColor3 = Color3.fromRGB(48, 48, 52)
 	end)
 	
 	-- Copy Discord link functionality (placeholder link)
 	discordBtn.MouseButton1Click:Connect(function()
-		local discordLink = "https://discord.gg/yourserver"
+		local discordLink = "https://discord.gg/cE6tjPRzjx"
 		setclipboard(discordLink)
 		discordBtn.Text = "Copied!"
 		task.wait(1.5)
@@ -226,13 +225,16 @@ function WindUI:CreateWindow(options)
 	self.MainFrame.Name = randomName()
 	self.MainFrame.Size = UDim2.new(0, size[1], 0, size[2])
 	self.MainFrame.Position = UDim2.new(0.5, -size[1]/2, 0.5, -size[2]/2)
-	-- Updated main frame to darker color matching key-link-ui
-	self.MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+	-- Updated to charcoal slate background matching reference image
+	self.MainFrame.BackgroundColor3 = Color3.fromRGB(38, 38, 42)
 	self.MainFrame.BorderSizePixel = 0
 	self.MainFrame.ClipsDescendants = false
 	self.MainFrame.Active = true
 	self.MainFrame.Visible = true
 	self.MainFrame.Parent = self.ScreenGui
+	
+	-- Store MainFrame reference for popup positioning
+	self._mainFrame = self.MainFrame
 	
 	local mainCorner = Instance.new("UICorner")
 	mainCorner.Name = randomName()
@@ -243,8 +245,8 @@ function WindUI:CreateWindow(options)
 	local titleBar = Instance.new("Frame")
 	titleBar.Name = randomName()
 	titleBar.Size = UDim2.new(1, 0, 0, 50)
-	-- Updated title bar to darker color matching key-link-ui header
-	titleBar.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+	-- Updated title bar to match slate theme
+	titleBar.BackgroundColor3 = Color3.fromRGB(38, 38, 42)
 	titleBar.BorderSizePixel = 0
 	titleBar.Active = true
 	titleBar.Parent = self.MainFrame
@@ -258,8 +260,7 @@ function WindUI:CreateWindow(options)
 	titleFix.Name = randomName()
 	titleFix.Size = UDim2.new(1, 0, 0, 12)
 	titleFix.Position = UDim2.new(0, 0, 1, -12)
-	-- Updated title fix to match new title bar color
-	titleFix.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+	titleFix.BackgroundColor3 = Color3.fromRGB(38, 38, 42)
 	titleFix.BorderSizePixel = 0
 	titleFix.Parent = titleBar
 	
@@ -281,7 +282,8 @@ function WindUI:CreateWindow(options)
 	closeBtn.Name = randomName()
 	closeBtn.Size = UDim2.new(0, 38, 0, 38)
 	closeBtn.Position = UDim2.new(1, -48, 0, 6)
-	closeBtn.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
+	-- Updated close button to slate theme
+	closeBtn.BackgroundColor3 = Color3.fromRGB(48, 48, 52)
 	closeBtn.Text = "×"
 	closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 	closeBtn.TextSize = 24
@@ -300,7 +302,8 @@ function WindUI:CreateWindow(options)
 	minimizeBtn.Name = randomName()
 	minimizeBtn.Size = UDim2.new(0, 38, 0, 38)
 	minimizeBtn.Position = UDim2.new(1, -92, 0, 6)
-	minimizeBtn.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
+	-- Updated minimize button to bright blue matching reference
+	minimizeBtn.BackgroundColor3 = Color3.fromRGB(70, 140, 255)
 	minimizeBtn.Text = "−"
 	minimizeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 	minimizeBtn.TextSize = 22
@@ -308,7 +311,7 @@ function WindUI:CreateWindow(options)
 	minimizeBtn.BorderSizePixel = 0
 	minimizeBtn.AutoButtonColor = false
 	minimizeBtn.Parent = titleBar
-	
+
 	local minCorner = Instance.new("UICorner")
 	minCorner.Name = randomName()
 	minCorner.CornerRadius = UDim.new(0, 8)
@@ -319,7 +322,8 @@ function WindUI:CreateWindow(options)
 	floatingBtn.Name = randomName()
 	floatingBtn.Size = UDim2.new(0, 180, 0, 45)
 	floatingBtn.Position = UDim2.new(0.5, -90, 0, 15)
-	floatingBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+	-- Updated floating button to slate theme
+	floatingBtn.BackgroundColor3 = Color3.fromRGB(38, 38, 42)
 	floatingBtn.BackgroundTransparency = 0.2
 	floatingBtn.BorderSizePixel = 0
 	floatingBtn.Visible = false
@@ -327,7 +331,7 @@ function WindUI:CreateWindow(options)
 	floatingBtn.Text = ""
 	floatingBtn.AutoButtonColor = false
 	floatingBtn.Parent = self.ScreenGui
-	
+
 	local floatingCorner = Instance.new("UICorner")
 	floatingCorner.Name = randomName()
 	floatingCorner.CornerRadius = UDim.new(0, 12)
@@ -371,8 +375,8 @@ function WindUI:CreateWindow(options)
 	self.TabContainer.Name = randomName()
 	self.TabContainer.Size = UDim2.new(0, 140, 1, -60)
 	self.TabContainer.Position = UDim2.new(0, 10, 0, 60)
-	-- Updated tab container to darker color
-	self.TabContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+	-- Updated tab container to slightly darker slate
+	self.TabContainer.BackgroundColor3 = Color3.fromRGB(32, 32, 36)
 	self.TabContainer.BorderSizePixel = 0
 	self.TabContainer.ClipsDescendants = true
 	self.TabContainer.ScrollBarThickness = 0
@@ -389,10 +393,11 @@ function WindUI:CreateWindow(options)
 	local tabLayout = Instance.new("UIListLayout")
 	tabLayout.Name = randomName()
 	tabLayout.SortOrder = Enum.SortOrder.LayoutOrder
-	tabLayout.Padding = UDim.new(0, 8)
+	-- Reduced padding between tabs for tighter spacing
+	tabLayout.Padding = UDim.new(0, 6)
 	tabLayout.Parent = self.TabContainer
 	
-	-- Auto-update canvas size when tabs are added
+	-- Added automatic canvas size update for unlimited tabs
 	tabLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
 		self.TabContainer.CanvasSize = UDim2.new(0, 0, 0, tabLayout.AbsoluteContentSize.Y + 20)
 	end)
@@ -512,11 +517,12 @@ function WindUI:CreateWindow(options)
 	end)
 	
 	closeBtn.MouseEnter:Connect(function()
-		closeBtn.BackgroundColor3 = Color3.fromRGB(196, 43, 28)
+		-- Updated close button hover to red matching reference
+		closeBtn.BackgroundColor3 = Color3.fromRGB(240, 60, 60)
 	end)
 	
 	closeBtn.MouseLeave:Connect(function()
-		closeBtn.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
+		closeBtn.BackgroundColor3 = Color3.fromRGB(48, 48, 52)
 	end)
 	
 	-- Minimize Button
@@ -526,11 +532,12 @@ function WindUI:CreateWindow(options)
 	end)
 	
 	minimizeBtn.MouseEnter:Connect(function()
-		minimizeBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 215)
+		-- Updated minimize hover to brighter blue
+		minimizeBtn.BackgroundColor3 = Color3.fromRGB(90, 160, 255)
 	end)
 	
 	minimizeBtn.MouseLeave:Connect(function()
-		minimizeBtn.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
+		minimizeBtn.BackgroundColor3 = Color3.fromRGB(70, 140, 255)
 	end)
 	
 	-- Floating Button
@@ -542,12 +549,13 @@ function WindUI:CreateWindow(options)
 	end)
 	
 	floatingBtn.MouseEnter:Connect(function()
-		floatingBtn.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
+		-- Updated floating button hover
+		floatingBtn.BackgroundColor3 = Color3.fromRGB(48, 48, 52)
 		floatingBtn.BackgroundTransparency = 0.15
 	end)
 	
 	floatingBtn.MouseLeave:Connect(function()
-		floatingBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+		floatingBtn.BackgroundColor3 = Color3.fromRGB(38, 38, 42)
 		floatingBtn.BackgroundTransparency = 0.2
 	end)
 	
@@ -577,8 +585,8 @@ function WindUI:CreateTab(options)
 	local tabButton = Instance.new("TextButton")
 	tabButton.Name = randomName()
 	tabButton.Size = UDim2.new(1, 0, 0, 45)
-	-- Updated tab button to darker color matching key-link-ui
-	tabButton.BackgroundColor3 = Color3.fromRGB(35, 35, 40)
+	-- Updated tab button to slate theme
+	tabButton.BackgroundColor3 = Color3.fromRGB(42, 42, 46)
 	tabButton.Text = ""
 	tabButton.BorderSizePixel = 0
 	tabButton.AutoButtonColor = false
@@ -660,7 +668,8 @@ function WindUI:CreateTab(options)
 	local tabContentLayout = Instance.new("UIListLayout")
 	tabContentLayout.Name = randomName()
 	tabContentLayout.SortOrder = Enum.SortOrder.LayoutOrder
-	tabContentLayout.Padding = UDim.new(0, 12)
+	-- Reduced padding between content elements (toggles, buttons, etc.) for tighter spacing
+	tabContentLayout.Padding = UDim.new(0, 8)
 	tabContentLayout.Parent = tabContent
 	
 	tabContentLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
@@ -690,8 +699,7 @@ function WindUI:CreateTab(options)
 		end
 		
 		for _, t in pairs(self.Tabs) do
-			-- Updated inactive tab color to match new darker scheme
-			t.Button.BackgroundColor3 = Color3.fromRGB(35, 35, 40)
+			t.Button.BackgroundColor3 = Color3.fromRGB(42, 42, 46)
 			-- Only update icon color if icon exists
 			if t.Icon then
 				t.Icon.TextColor3 = Color3.fromRGB(200, 200, 200)
@@ -700,8 +708,8 @@ function WindUI:CreateTab(options)
 			t.Content.Visible = false
 		end
 		
-		-- Updated active tab color to brighter blue matching key-link-ui
-		tabButton.BackgroundColor3 = Color3.fromRGB(70, 130, 255)
+		-- Updated active tab to bright blue
+		tabButton.BackgroundColor3 = Color3.fromRGB(70, 140, 255)
 		-- Only update icon color if icon exists
 		if iconLabel then
 			iconLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -714,24 +722,21 @@ function WindUI:CreateTab(options)
 	-- Only show hover effect if tab is not locked
 	tabButton.MouseEnter:Connect(function()
 		if not locked and self.CurrentTab ~= name then
-			-- Updated hover color to slightly lighter
-			tabButton.BackgroundColor3 = Color3.fromRGB(45, 45, 50)
+			-- Updated tab hover to lighter slate
+			tabButton.BackgroundColor3 = Color3.fromRGB(52, 52, 56)
 		end
 	end)
 	
 	tabButton.MouseLeave:Connect(function()
 		if not locked and self.CurrentTab ~= name then
-			-- Revert to darker color
-			tabButton.BackgroundColor3 = Color3.fromRGB(35, 35, 40)
+			tabButton.BackgroundColor3 = Color3.fromRGB(42, 42, 46)
 		end
 	end)
-	
-	tabButton.Parent = self.TabContainer
-	
+
 	-- Auto-select first tab that is not locked
 	if not self.CurrentTab and not locked then
-		-- Updated first tab active color
-		tabButton.BackgroundColor3 = Color3.fromRGB(70, 130, 255)
+		-- Updated first tab selection to bright blue
+		tabButton.BackgroundColor3 = Color3.fromRGB(70, 140, 255)
 		-- Only update icon color if icon exists
 		if iconLabel then
 			iconLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -826,8 +831,8 @@ function createButton(options, parent)
 	local button = Instance.new("TextButton")
 	button.Name = randomName()
 	button.Size = UDim2.new(0, 200, 0, 38)
-	-- Updated button colors to match key-link-ui blue
-	button.BackgroundColor3 = locked and Color3.fromRGB(60, 60, 60) or Color3.fromRGB(70, 130, 255)
+	-- Updated button colors to match slate theme with bright blue
+	button.BackgroundColor3 = locked and Color3.fromRGB(48, 48, 52) or Color3.fromRGB(70, 140, 255)
 	button.Text = text
 	-- Dimmed text for locked buttons
 	button.TextColor3 = locked and Color3.fromRGB(120, 120, 120) or Color3.fromRGB(255, 255, 255)
@@ -837,12 +842,7 @@ function createButton(options, parent)
 	button.AutoButtonColor = false
 	button.ZIndex = 2
 	button.Parent = parent
-	
-	local corner = Instance.new("UICorner")
-	corner.Name = randomName()
-	corner.CornerRadius = UDim.new(0, 8)
-	corner.Parent = button
-	
+
 	-- Add lock icon for locked buttons
 	if locked then
 		local lockIcon = Instance.new("TextLabel")
@@ -869,15 +869,14 @@ function createButton(options, parent)
 	else
 		-- Only add hover/click effects if button is not locked
 		button.MouseEnter:Connect(function()
-			-- Updated hover color to slightly darker blue
-			button.BackgroundColor3 = Color3.fromRGB(80, 140, 255)
+			-- Updated button hover to brighter blue
+			button.BackgroundColor3 = Color3.fromRGB(90, 160, 255)
 		end)
 		
 		button.MouseLeave:Connect(function()
-			-- Revert to original blue
-			button.BackgroundColor3 = Color3.fromRGB(70, 130, 255)
+			button.BackgroundColor3 = Color3.fromRGB(70, 140, 255)
 		end)
-		
+
 		button.MouseButton1Down:Connect(function()
 			TweenService:Create(button, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
 				Size = UDim2.new(0, 190, 0, 36)
@@ -913,9 +912,10 @@ function createToggle(options, parent)
 	
 	local toggleFrame = Instance.new("Frame")
 	toggleFrame.Name = randomName()
-	toggleFrame.Size = UDim2.new(1, 0, 0, 40)
-	-- Updated toggle frame to darker color matching key-link-ui
-	toggleFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 40)
+	-- Reduced toggle height from 40 to 38 for more compact appearance
+	toggleFrame.Size = UDim2.new(1, 0, 0, 38)
+	-- Updated toggle frame to slate theme
+	toggleFrame.BackgroundColor3 = Color3.fromRGB(42, 42, 46)
 	toggleFrame.BorderSizePixel = 0
 	toggleFrame.ZIndex = 2
 	toggleFrame.Parent = parent
@@ -968,7 +968,8 @@ function createToggle(options, parent)
 	toggleButton.Name = randomName()
 	toggleButton.Size = UDim2.new(0, 50, 0, 24)
 	toggleButton.Position = UDim2.new(1, -60, 0.5, -12)
-	toggleButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+	-- Updated toggle button off state to darker slate
+	toggleButton.BackgroundColor3 = Color3.fromRGB(52, 52, 56)
 	toggleButton.BorderSizePixel = 0
 	toggleButton.ZIndex = 3
 	toggleButton.Parent = toggleFrame
@@ -999,11 +1000,12 @@ function createToggle(options, parent)
 		local tweenInfo = TweenInfo.new(animate and 0.2 or 0, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
 		
 		if toggled then
-			-- Updated toggle active color to brighter blue
-			TweenService:Create(toggleButton, tweenInfo, {BackgroundColor3 = Color3.fromRGB(70, 130, 255)}):Play()
+			-- Updated toggle on state to bright blue
+			TweenService:Create(toggleButton, tweenInfo, {BackgroundColor3 = Color3.fromRGB(70, 140, 255)}):Play()
 			TweenService:Create(toggleCircle, tweenInfo, {Position = UDim2.new(1, -22, 0.5, -10)}):Play()
 		else
-			TweenService:Create(toggleButton, tweenInfo, {BackgroundColor3 = Color3.fromRGB(60, 60, 60)}):Play()
+			-- Updated toggle off state
+			TweenService:Create(toggleButton, tweenInfo, {BackgroundColor3 = Color3.fromRGB(52, 52, 56)}):Play()
 			TweenService:Create(toggleCircle, tweenInfo, {Position = UDim2.new(0, 2, 0.5, -10)}):Play()
 		end
 		
@@ -1040,8 +1042,8 @@ function createSlider(options, parent)
 	local sliderFrame = Instance.new("Frame")
 	sliderFrame.Name = randomName()
 	sliderFrame.Size = UDim2.new(1, 0, 0, 55)
-	-- Updated slider frame to darker color
-	sliderFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 40)
+	-- Updated slider frame to slate theme
+	sliderFrame.BackgroundColor3 = Color3.fromRGB(42, 42, 46)
 	sliderFrame.BorderSizePixel = 0
 	sliderFrame.ZIndex = 2
 	sliderFrame.Parent = parent
@@ -1070,14 +1072,14 @@ function createSlider(options, parent)
 	valueLabel.Position = UDim2.new(1, -60, 0, 8)
 	valueLabel.BackgroundTransparency = 1
 	valueLabel.Text = tostring(default)
-	-- Updated value label color to brighter blue
-	valueLabel.TextColor3 = Color3.fromRGB(70, 130, 255)
+	-- Updated value label to bright blue
+	valueLabel.TextColor3 = Color3.fromRGB(70, 140, 255)
 	valueLabel.TextSize = 15
 	valueLabel.Font = Enum.Font.GothamBold
 	valueLabel.TextXAlignment = Enum.TextXAlignment.Right
 	valueLabel.ZIndex = 3
 	valueLabel.Parent = sliderFrame
-	
+
 	local sliderHitbox = Instance.new("Frame")
 	sliderHitbox.Name = randomName()
 	sliderHitbox.Size = UDim2.new(1, -30, 0, 30)
@@ -1090,11 +1092,12 @@ function createSlider(options, parent)
 	sliderTrack.Name = randomName()
 	sliderTrack.Size = UDim2.new(1, 0, 0, 6)
 	sliderTrack.Position = UDim2.new(0, 0, 0.5, -3)
-	sliderTrack.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+	-- Updated slider track to darker slate
+	sliderTrack.BackgroundColor3 = Color3.fromRGB(52, 52, 56)
 	sliderTrack.BorderSizePixel = 0
 	sliderTrack.ZIndex = 3
 	sliderTrack.Parent = sliderHitbox
-	
+
 	local trackCorner = Instance.new("UICorner")
 	trackCorner.Name = randomName()
 	trackCorner.CornerRadius = UDim.new(1, 0)
@@ -1103,12 +1106,12 @@ function createSlider(options, parent)
 	local sliderFill = Instance.new("Frame")
 	sliderFill.Name = randomName()
 	sliderFill.Size = UDim2.new((default - min) / (max - min), 0, 1, 0)
-	-- Updated slider fill to brighter blue
-	sliderFill.BackgroundColor3 = Color3.fromRGB(70, 130, 255)
+	-- Updated slider fill to bright blue
+	sliderFill.BackgroundColor3 = Color3.fromRGB(70, 140, 255)
 	sliderFill.BorderSizePixel = 0
 	sliderFill.ZIndex = 3
 	sliderFill.Parent = sliderTrack
-	
+
 	local fillCorner = Instance.new("UICorner")
 	fillCorner.Name = randomName()
 	fillCorner.CornerRadius = UDim.new(1, 0)
@@ -1186,13 +1189,13 @@ function createDropdown(options, parent)
 	local dropdownFrame = Instance.new("Frame")
 	dropdownFrame.Name = randomName()
 	dropdownFrame.Size = UDim2.new(1, 0, 0, 40)
-	-- Updated dropdown frame to darker color
-	dropdownFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 40)
+	-- Updated dropdown to slate theme
+	dropdownFrame.BackgroundColor3 = Color3.fromRGB(42, 42, 46)
 	dropdownFrame.BorderSizePixel = 0
 	dropdownFrame.ClipsDescendants = false
 	dropdownFrame.ZIndex = 200
 	dropdownFrame.Parent = parent
-	
+
 	local frameCorner = Instance.new("UICorner")
 	frameCorner.Name = randomName()
 	frameCorner.CornerRadius = UDim.new(0, 8)
@@ -1235,18 +1238,18 @@ function createDropdown(options, parent)
 	optionsFrame.Name = randomName()
 	optionsFrame.Size = UDim2.new(1, 0, 0, 0)
 	optionsFrame.Position = UDim2.new(0, 0, 1, 5)
-	-- Updated options frame to darker color
-	optionsFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 40)
+	-- Updated options frame to slate theme
+	optionsFrame.BackgroundColor3 = Color3.fromRGB(42, 42, 46)
 	optionsFrame.BorderSizePixel = 0
 	optionsFrame.Visible = false
 	optionsFrame.ClipsDescendants = true
 	optionsFrame.ScrollBarThickness = 4
-	-- Updated scrollbar color to brighter blue
-	optionsFrame.ScrollBarImageColor3 = Color3.fromRGB(70, 130, 255)
+	-- Updated scrollbar to bright blue
+	optionsFrame.ScrollBarImageColor3 = Color3.fromRGB(70, 140, 255)
 	optionsFrame.ZIndex = 300
 	optionsFrame.ScrollingEnabled = true
 	optionsFrame.Parent = dropdownFrame
-	
+
 	local optionsCorner = Instance.new("UICorner")
 	optionsCorner.Name = randomName()
 	optionsCorner.CornerRadius = UDim.new(0, 8)
@@ -1304,8 +1307,8 @@ function createDropdown(options, parent)
 		local optionButton = Instance.new("TextButton")
 		optionButton.Name = randomName()
 		optionButton.Size = UDim2.new(1, 0, 0, 35)
-		-- Updated option button to darker color
-		optionButton.BackgroundColor3 = Color3.fromRGB(35, 35, 40)
+		-- Updated option button to slate theme
+		optionButton.BackgroundColor3 = Color3.fromRGB(42, 42, 46)
 		optionButton.Text = option
 		optionButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 		optionButton.TextSize = 14
@@ -1316,13 +1319,12 @@ function createDropdown(options, parent)
 		optionButton.Parent = optionsFrame
 		
 		optionButton.MouseEnter:Connect(function()
-			-- Updated hover color to brighter blue
-			optionButton.BackgroundColor3 = Color3.fromRGB(70, 130, 255)
+			-- Updated option hover to bright blue
+			optionButton.BackgroundColor3 = Color3.fromRGB(70, 140, 255)
 		end)
 		
 		optionButton.MouseLeave:Connect(function()
-			-- Revert to darker color
-			optionButton.BackgroundColor3 = Color3.fromRGB(35, 35, 40)
+			optionButton.BackgroundColor3 = Color3.fromRGB(42, 42, 46)
 		end)
 		
 		optionButton.MouseButton1Click:Connect(function()
