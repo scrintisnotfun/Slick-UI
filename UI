@@ -215,9 +215,9 @@ function WindUI:CreateWindow(options)
 	self.ScreenGui = Instance.new("ScreenGui")
 	self.ScreenGui.Name = randomName()
 	self.ScreenGui.ResetOnSpawn = false
-	-- Set ZIndexBehavior to Global and increase ZIndex to ensure UI stays on top
+	-- Use DisplayOrder instead of ZIndex for more reliable always-on-top behavior
+	self.ScreenGui.DisplayOrder = 9999
 	self.ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Global
-	self.ScreenGui.ZIndex = 9999
 	self.ScreenGui.Parent = playerGui
 
 	
