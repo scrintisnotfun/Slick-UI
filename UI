@@ -223,7 +223,7 @@ function WindUI:CreateWindow(options)
 	-- Add coroutine that continuously brings UI to front
 	task.spawn(function()
 		while self.ScreenGui and self.ScreenGui.Parent do
-			self.ScreenGui.DisplayOrder = 2147483647
+			self.ScreenGui.DisplayOrder = 1
 			task.wait(0.1) -- Check every 0.1 seconds
 		end
 	end)
