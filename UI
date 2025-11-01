@@ -212,21 +212,17 @@ function WindUI:CreateWindow(options)
 	local playerGui = player:WaitForChild("PlayerGui")
 	
 -- Create ScreenGui
-	self.ScreenGui = Instance.new("ScreenGui")
-	self.ScreenGui.Name = randomName()
-	self.ScreenGui.ResetOnSpawn = false
-	-- Use moderate ZIndex (999) to stay above Roblox core menus but not override other PlayerGui scripts
-	self.ScreenGui.DisplayOrder = 999
-	self.ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Global
-	self.ScreenGui.Parent = playerGui
-	
-	-- Add coroutine that continuously brings UI to front
-	task.spawn(function()
-		while self.ScreenGui and self.ScreenGui.Parent do
-			self.ScreenGui.DisplayOrder = 999
-			task.wait(0.1) -- Check every 0.1 seconds
-		end
-	end)
+self.ScreenGui = Instance.new("ScreenGui")
+self.ScreenGui.Name = randomName()
+self.ScreenGui.ResetOnSpawn = false
+self.ScreenGui.DisplayOrder = 0
+self.ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Global
+-- Parent to CoreGui instead of PlayerGui to stay on top of Roblox native UI
+self.ScreenGui.Parent = game:GetService("CoreGui")
+
+-- Remove the coroutine loop since CoreGui naturally layers above PlayerGui
+</merged_code
+
 
 
 	
