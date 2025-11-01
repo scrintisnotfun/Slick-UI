@@ -215,15 +215,15 @@ function WindUI:CreateWindow(options)
 	self.ScreenGui = Instance.new("ScreenGui")
 	self.ScreenGui.Name = randomName()
 	self.ScreenGui.ResetOnSpawn = false
-	-- Use extremely high ZIndex and add a continuous loop to keep UI on top in executor
-	self.ScreenGui.DisplayOrder = 1 -- Max integer value
+	-- Use moderate ZIndex (999) to stay above Roblox core menus but not override other PlayerGui scripts
+	self.ScreenGui.DisplayOrder = 999
 	self.ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Global
 	self.ScreenGui.Parent = playerGui
 	
 	-- Add coroutine that continuously brings UI to front
 	task.spawn(function()
 		while self.ScreenGui and self.ScreenGui.Parent do
-			self.ScreenGui.DisplayOrder = 1
+			self.ScreenGui.DisplayOrder = 999
 			task.wait(0.1) -- Check every 0.1 seconds
 		end
 	end)
