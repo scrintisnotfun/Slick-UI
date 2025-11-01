@@ -216,7 +216,7 @@ function WindUI:CreateWindow(options)
 	self.ScreenGui.Name = randomName()
 	self.ScreenGui.ResetOnSpawn = false
 	-- Use extremely high ZIndex and add a continuous loop to keep UI on top in executor
-	self.ScreenGui.DisplayOrder = 2147483647 -- Max integer value
+	self.ScreenGui.DisplayOrder = 1 -- Max integer value
 	self.ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Global
 	self.ScreenGui.Parent = playerGui
 	
