@@ -215,10 +215,19 @@ function WindUI:CreateWindow(options)
 	self.ScreenGui = Instance.new("ScreenGui")
 	self.ScreenGui.Name = randomName()
 	self.ScreenGui.ResetOnSpawn = false
-	-- Use DisplayOrder instead of ZIndex for more reliable always-on-top behavior
-	self.ScreenGui.DisplayOrder = 9999
+	-- Use extremely high ZIndex and add a continuous loop to keep UI on top in executor
+	self.ScreenGui.DisplayOrder = 2147483647 -- Max integer value
 	self.ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Global
 	self.ScreenGui.Parent = playerGui
+	
+	-- Add coroutine that continuously brings UI to front
+	task.spawn(function()
+		while self.ScreenGui and self.ScreenGui.Parent do
+			self.ScreenGui.DisplayOrder = 2147483647
+			task.wait(0.1) -- Check every 0.1 seconds
+		end
+	end)
+
 
 	
 	-- Store ScreenGui reference for popup creation
