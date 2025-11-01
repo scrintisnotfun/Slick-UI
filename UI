@@ -211,12 +211,15 @@ function WindUI:CreateWindow(options)
 	local player = Players.LocalPlayer
 	local playerGui = player:WaitForChild("PlayerGui")
 	
-	-- Create ScreenGui
+-- Create ScreenGui
 	self.ScreenGui = Instance.new("ScreenGui")
 	self.ScreenGui.Name = randomName()
 	self.ScreenGui.ResetOnSpawn = false
-	self.ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+	-- Set ZIndexBehavior to Global and increase ZIndex to ensure UI stays on top
+	self.ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Global
+	self.ScreenGui.ZIndex = 9999
 	self.ScreenGui.Parent = playerGui
+
 	
 	-- Store ScreenGui reference for popup creation
 	self._screenGui = self.ScreenGui
