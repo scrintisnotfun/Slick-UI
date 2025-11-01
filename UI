@@ -220,8 +220,14 @@ self.ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Global
 -- Parent to CoreGui instead of PlayerGui to stay on top of Roblox native UI
 self.ScreenGui.Parent = game:GetService("CoreGui")
 
--- Remove the coroutine loop since CoreGui naturally layers above PlayerGui
-</merged_code
+-- Add coroutine loop to continuously keep UI on top of Roblox native menus
+task.spawn(function()
+	while self.ScreenGui and self.ScreenGui.Parent do
+		self.ScreenGui.DisplayOrder = 2147483647
+		task.wait(0.05)
+	end
+end)
+
 
 
 
