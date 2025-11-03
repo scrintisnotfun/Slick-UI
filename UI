@@ -647,9 +647,11 @@ function WindUI:CreateTab(options)
 	tabContent.Position = UDim2.new(0, 0, 0, 0)
 	tabContent.BackgroundTransparency = 1
 	tabContent.BorderSizePixel = 0
-	tabContent.ScrollBarThickness = 0
+	tabContent.ScrollBarThickness = 1
+	tabContent.ScrollBarImageTransparency = 1
 	tabContent.CanvasSize = UDim2.new(0, 0, 0, 0)
 	tabContent.ScrollingDirection = Enum.ScrollingDirection.Y
+	tabContent.ScrollingEnabled = true
 	tabContent.Visible = false
 	tabContent.ZIndex = 6
 	tabContent.Parent = self.TabContentContainer
@@ -660,8 +662,12 @@ function WindUI:CreateTab(options)
 	tabContentLayout.Padding = UDim.new(0, 12)
 	tabContentLayout.Parent = tabContent
 	
+	-- Optimized canvas size update with safety checks
 	tabContentLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-		tabContent.CanvasSize = UDim2.new(0, 0, 0, tabContentLayout.AbsoluteContentSize.Y + 15)
+		local contentSize = tabContentLayout.AbsoluteContentSize
+		-- Safety check: ensure canvas size doesn't exceed reasonable limits
+		local maxSize = math.min(contentSize.Y + 15, 1000000) -- Max 1 million pixels
+		tabContent.CanvasSize = UDim2.new(0, 0, 0, maxSize)
 	end)
 	
 	local tab = {
