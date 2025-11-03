@@ -662,12 +662,45 @@ function WindUI:CreateTab(options)
 	tabContentLayout.Padding = UDim.new(0, 12)
 	tabContentLayout.Parent = tabContent
 	
-	-- Optimized canvas size update with safety checks
-	tabContentLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-		local contentSize = tabContentLayout.AbsoluteContentSize
-		-- Safety check: ensure canvas size doesn't exceed reasonable limits
-		local maxSize = math.min(contentSize.Y + 15, 1000000) -- Max 1 million pixels
-		tabContent.CanvasSize = UDim2.new(0, 0, 0, maxSize)
+	-- Optimized canvas size update with throttling and error handling
+	local updateCanvasSize
+	local canvasUpdatePending = false
+	
+	updateCanvasSize = function()
+		if canvasUpdatePending then return end
+		canvasUpdatePending = true
+		
+		task.spawn(function()
+			task.wait(0.01) -- Small delay to batch updates
+			canvasUpdatePending = false
+			
+			if tabContent and tabContent.Parent and tabContentLayout then
+				local success, contentSize = pcall(function()
+					return tabContentLayout.AbsoluteContentSize
+				end)
+				
+				if success and contentSize and typeof(contentSize) == "Vector2" then
+					local ySize = contentSize.Y
+					-- Check for valid number (not NaN or infinity)
+					if ySize and ySize == ySize and ySize ~= math.huge and ySize ~= -math.huge then
+						local newSize = math.max(0, math.min(ySize + 15, 1000000))
+						pcall(function()
+							tabContent.CanvasSize = UDim2.new(0, 0, 0, newSize)
+						end)
+					end
+				end
+			end
+		end)
+	end
+	
+	tabContentLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateCanvasSize)
+	
+	-- Also update when child is added (with delay)
+	tabContent.ChildAdded:Connect(function()
+		task.spawn(function()
+			task.wait(0.05) -- Wait for layout to update
+			updateCanvasSize()
+		end)
 	end)
 	
 	local tab = {
@@ -822,6 +855,12 @@ function createButton(options, parent)
 	local screenGui = options._screenGui
 	local mainFrame = options._mainFrame
 	
+	-- Safety check: ensure parent exists and is valid
+	if not parent or not parent.Parent then
+		warn("WindUI: Cannot create button - parent is invalid")
+		return nil
+	end
+	
 	local button = Instance.new("TextButton")
 	button.Name = randomName()
 	button.Size = UDim2.new(0, 200, 0, 38)
@@ -835,7 +874,16 @@ function createButton(options, parent)
 	button.BorderSizePixel = 0
 	button.AutoButtonColor = false
 	button.ZIndex = 2
-	button.Parent = parent
+	
+	-- Safely set parent with error handling
+	local success = pcall(function()
+		button.Parent = parent
+	end)
+	if not success then
+		button:Destroy()
+		warn("WindUI: Failed to parent button - parent may be destroyed")
+		return nil
+	end
 	
 	local corner = Instance.new("UICorner")
 	corner.Name = randomName()
@@ -908,6 +956,12 @@ function createToggle(options, parent)
 	-- Get MainFrame reference for popup positioning
 	local mainFrame = options._mainFrame
 	
+	-- Safety check: ensure parent exists and is valid
+	if not parent or not parent.Parent then
+		warn("WindUI: Cannot create toggle - parent is invalid")
+		return nil
+	end
+	
 	local toggleFrame = Instance.new("Frame")
 	toggleFrame.Name = randomName()
 	toggleFrame.Size = UDim2.new(1, 0, 0, 40)
@@ -915,7 +969,16 @@ function createToggle(options, parent)
 	toggleFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
 	toggleFrame.BorderSizePixel = 0
 	toggleFrame.ZIndex = 2
-	toggleFrame.Parent = parent
+	
+	-- Safely set parent with error handling
+	local success = pcall(function()
+		toggleFrame.Parent = parent
+	end)
+	if not success then
+		toggleFrame:Destroy()
+		warn("WindUI: Failed to parent toggle - parent may be destroyed")
+		return nil
+	end
 	
 	local frameCorner = Instance.new("UICorner")
 	frameCorner.Name = randomName()
