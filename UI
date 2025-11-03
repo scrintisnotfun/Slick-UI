@@ -663,10 +663,13 @@ function WindUI:CreateTab(options)
 	tabContentLayout.Parent = tabContent
 	
 	-- Optimized canvas size update with throttling and error handling
+	-- Only update canvas for visible tabs to prevent performance issues
 	local updateCanvasSize
 	local canvasUpdatePending = false
 	
 	updateCanvasSize = function()
+		-- Only update if tab is visible
+		if not tabContent.Visible then return end
 		if canvasUpdatePending then return end
 		canvasUpdatePending = true
 		
@@ -674,7 +677,8 @@ function WindUI:CreateTab(options)
 			task.wait(0.01) -- Small delay to batch updates
 			canvasUpdatePending = false
 			
-			if tabContent and tabContent.Parent and tabContentLayout then
+			-- Double-check visibility before updating
+			if tabContent and tabContent.Parent and tabContentLayout and tabContent.Visible then
 				local success, contentSize = pcall(function()
 					return tabContentLayout.AbsoluteContentSize
 				end)
@@ -693,14 +697,26 @@ function WindUI:CreateTab(options)
 		end)
 	end
 	
-	tabContentLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateCanvasSize)
+	-- Store connection for potential cleanup
+	local contentSizeConnection = tabContentLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateCanvasSize)
 	
-	-- Also update when child is added (with delay)
-	tabContent.ChildAdded:Connect(function()
+	-- Also update when child is added (with delay) - only if visible
+	tabContent.ChildAdded:Connect(function(child)
+		if not tabContent.Visible then return end
 		task.spawn(function()
 			task.wait(0.05) -- Wait for layout to update
 			updateCanvasSize()
 		end)
+	end)
+	
+	-- Update canvas when tab becomes visible
+	tabContent:GetPropertyChangedSignal("Visible"):Connect(function()
+		if tabContent.Visible then
+			task.spawn(function()
+				task.wait(0.1)
+				updateCanvasSize()
+			end)
+		end
 	end)
 	
 	local tab = {
@@ -744,6 +760,25 @@ function WindUI:CreateTab(options)
 		textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 		tabContent.Visible = true
 		self.CurrentTab = name
+		
+		-- Force canvas update when tab becomes visible
+		task.spawn(function()
+			task.wait(0.1)
+			if tabContent.Visible and tabContentLayout then
+				local success, contentSize = pcall(function()
+					return tabContentLayout.AbsoluteContentSize
+				end)
+				if success and contentSize and typeof(contentSize) == "Vector2" then
+					local ySize = contentSize.Y
+					if ySize and ySize == ySize and ySize ~= math.huge and ySize ~= -math.huge then
+						local newSize = math.max(0, math.min(ySize + 15, 1000000))
+						pcall(function()
+							tabContent.CanvasSize = UDim2.new(0, 0, 0, newSize)
+						end)
+					end
+				end
+			end
+		end)
 	end)
 	
 	-- Only show hover effect if tab is not locked
@@ -786,12 +821,22 @@ function WindUI:CreateTab(options)
 			-- Pass ScreenGui and MainFrame reference to button
 			options._screenGui = self.ScreenGui
 			options._mainFrame = self._mainFrame
+			-- Validate parent before creation
+			if not tabContent or not tabContent.Parent then
+				warn("WindUI: Cannot create button - tab content is invalid")
+				return nil
+			end
 			return createButton(options, tabContent)
 		end,
 		Toggle = function(_, options)
 			-- Pass ScreenGui and MainFrame reference to toggle
 			options._screenGui = self.ScreenGui
 			options._mainFrame = self._mainFrame
+			-- Validate parent before creation
+			if not tabContent or not tabContent.Parent then
+				warn("WindUI: Cannot create toggle - tab content is invalid")
+				return nil
+			end
 			return createToggle(options, tabContent)
 		end,
 		Slider = function(_, options)
