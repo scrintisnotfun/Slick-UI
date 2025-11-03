@@ -1,13 +1,18 @@
--- Wind UI Library - Loadstring Compatible
--- Usage: local WindUI = loadstring(game:HttpGet("your-url-here"))()
--- Then: local window = WindUI:CreateWindow({Title = "My UI", Size = UDim2.fromOffset(600, 350)})
-
 local WindUI = {}
 WindUI.__index = WindUI
 
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
+
+-- Helper: fast property application for Instance.new
+local function fastNew(class, props)
+	local obj = Instance.new(class)
+	for k, v in pairs(props) do
+		obj[k] = v
+	end
+	return obj
+end
 
 -- Icon mapping for string-based icons
 local iconMap = {
@@ -205,7 +210,7 @@ function WindUI:CreateWindow(options)
 	if typeof(options.Size) == "UDim2" then
 		size = {options.Size.X.Offset, options.Size.Y.Offset}
 	else
-		size = options.Size or {850, 500}
+		size = options.Size or {950, 550}
 	end
 	
 	local player = Players.LocalPlayer
@@ -366,14 +371,15 @@ function WindUI:CreateWindow(options)
 	-- Tab Container
 	self.TabContainer = Instance.new("ScrollingFrame")
 	self.TabContainer.Name = randomName()
-	self.TabContainer.Size = UDim2.new(0, 140, 1, -60)
+	self.TabContainer.Size = UDim2.new(0, 170, 1, -70)
 	self.TabContainer.Position = UDim2.new(0, 10, 0, 60)
 	self.TabContainer.BackgroundColor3 = Color3.fromRGB(38, 38, 38)
 	self.TabContainer.BorderSizePixel = 0
 	self.TabContainer.ClipsDescendants = true
-	self.TabContainer.ScrollBarThickness = 0
+	self.TabContainer.ScrollBarThickness = 6
 	self.TabContainer.CanvasSize = UDim2.new(0, 0, 0, 0)
 	self.TabContainer.ScrollingDirection = Enum.ScrollingDirection.Y
+	self.TabContainer.AutomaticCanvasSize = Enum.AutomaticSize.Y
 	self.TabContainer.ZIndex = 10
 	self.TabContainer.Parent = self.MainFrame
 	
@@ -570,15 +576,17 @@ function WindUI:CreateTab(options)
 	-- Added Locked parameter for locked tabs
 	local locked = options.Locked or false
 	
-	local tabButton = Instance.new("TextButton")
-	tabButton.Name = randomName()
-	tabButton.Size = UDim2.new(1, 0, 0, 45)
-	-- Reverted locked tab to normal background color
-	tabButton.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-	tabButton.Text = ""
-	tabButton.BorderSizePixel = 0
-	tabButton.AutoButtonColor = false
-	tabButton.ZIndex = 11
+	-- Faster creation using fastNew
+	local tabButton = fastNew("TextButton", {
+		Name = randomName(),
+		Size = UDim2.new(1, 0, 0, 45),
+		BackgroundColor3 = Color3.fromRGB(45, 45, 45),
+		Text = "",
+		BorderSizePixel = 0,
+		AutoButtonColor = false,
+		ZIndex = 11,
+		Parent = self.TabContainer
+	})
 	
 	local corner = Instance.new("UICorner")
 	corner.Name = randomName()
@@ -588,18 +596,18 @@ function WindUI:CreateTab(options)
 	-- Only create icon label if icon exists
 	local iconLabel
 	if icon then
-		iconLabel = Instance.new("TextLabel")
-		iconLabel.Name = randomName()
-		iconLabel.Size = UDim2.new(0, 25, 1, 0)
-		iconLabel.Position = UDim2.new(0, 10, 0, 0)
-		iconLabel.BackgroundTransparency = 1
-		iconLabel.Text = icon
-		-- Reverted locked icon to normal color
-		iconLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
-		iconLabel.TextSize = 18
-		iconLabel.Font = Enum.Font.GothamBold
-		iconLabel.ZIndex = 12
-		iconLabel.Parent = tabButton
+		iconLabel = fastNew("TextLabel", {
+			Name = randomName(),
+			Size = UDim2.new(0, 25, 1, 0),
+			Position = UDim2.new(0, 10, 0, 0),
+			BackgroundTransparency = 1,
+			Text = icon,
+			TextColor3 = Color3.fromRGB(200, 200, 200),
+			TextSize = 18,
+			Font = Enum.Font.GothamBold,
+			ZIndex = 12,
+			Parent = tabButton
+		})
 	end
 	
 	-- Centered text alignment and adjusted sizing for better appearance
@@ -640,18 +648,19 @@ function WindUI:CreateTab(options)
 		lockIcon.Parent = tabButton
 	end
 	
-	local tabContent = Instance.new("ScrollingFrame")
-	tabContent.Name = name .. "Content"
-	tabContent.Size = UDim2.new(1, 0, 1, 0)
-	tabContent.Position = UDim2.new(0, 0, 0, 0)
-	tabContent.BackgroundTransparency = 1
-	tabContent.BorderSizePixel = 0
-	tabContent.ScrollBarThickness = 0
-	tabContent.CanvasSize = UDim2.new(0, 0, 0, 0)
-	tabContent.ScrollingDirection = Enum.ScrollingDirection.Y
-	tabContent.Visible = false
-	tabContent.ZIndex = 6
-	tabContent.Parent = self.TabContentContainer
+	local tabContent = fastNew("ScrollingFrame", {
+		Name = name .. "Content",
+		Size = UDim2.new(1, 0, 1, 0),
+		Position = UDim2.new(0, 0, 0, 0),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 0,
+		ScrollBarThickness = 0,
+		CanvasSize = UDim2.new(0, 0, 0, 0),
+		ScrollingDirection = Enum.ScrollingDirection.Y,
+		Visible = false,
+		ZIndex = 6,
+		Parent = self.TabContentContainer
+	})
 	
 	local tabContentLayout = Instance.new("UIListLayout")
 	tabContentLayout.Name = randomName()
@@ -718,8 +727,6 @@ function WindUI:CreateTab(options)
 			tabButton.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
 		end
 	end)
-	
-	tabButton.Parent = self.TabContainer
 	
 	-- Auto-select first tab that is not locked
 	if not self.CurrentTab and not locked then
