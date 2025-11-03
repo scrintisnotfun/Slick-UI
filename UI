@@ -363,19 +363,20 @@ function WindUI:CreateWindow(options)
 	floatingLabel.ZIndex = 2
 	floatingLabel.Parent = floatingBtn
 	
-	-- Tab Container
-	self.TabContainer = Instance.new("ScrollingFrame")
-	self.TabContainer.Name = randomName()
-	self.TabContainer.Size = UDim2.new(0, 140, 1, -60)
-	self.TabContainer.Position = UDim2.new(0, 10, 0, 60)
-	self.TabContainer.BackgroundColor3 = Color3.fromRGB(38, 38, 38)
-	self.TabContainer.BorderSizePixel = 0
-	self.TabContainer.ClipsDescendants = true
-	self.TabContainer.ScrollBarThickness = 0
-	self.TabContainer.CanvasSize = UDim2.new(0, 0, 0, 0)
-	self.TabContainer.ScrollingDirection = Enum.ScrollingDirection.Y
-	self.TabContainer.ZIndex = 10
-	self.TabContainer.Parent = self.MainFrame
+-- Tab Container
+self.TabContainer = Instance.new("ScrollingFrame")
+self.TabContainer.Name = randomName()
+self.TabContainer.Size = UDim2.new(0, 140, 1, -60)
+self.TabContainer.Position = UDim2.new(0, 10, 0, 60)
+self.TabContainer.BackgroundColor3 = Color3.fromRGB(38, 38, 38)
+self.TabContainer.BorderSizePixel = 0
+self.TabContainer.ClipsDescendants = true
+self.TabContainer.ScrollBarThickness = 1
+self.TabContainer.ScrollBarImageTransparency = 1
+self.TabContainer.CanvasSize = UDim2.new(0, 0, 0, 0)
+self.TabContainer.ScrollingDirection = Enum.ScrollingDirection.Y
+self.TabContainer.ZIndex = 10
+self.TabContainer.Parent = self.MainFrame
 	
 	local tabContainerCorner = Instance.new("UICorner")
 	tabContainerCorner.Name = randomName()
