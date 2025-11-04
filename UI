@@ -2,6 +2,9 @@
 -- Usage: local WindUI = loadstring(game:HttpGet("your-url-here"))()
 -- Then: local window = WindUI:CreateWindow({Title = "My UI", Size = UDim2.fromOffset(600, 350)})
 
+warn("=== WindUI Library Loading ===")
+print("=== WindUI Library Loading ===")
+
 local WindUI = {}
 WindUI.__index = WindUI
 
@@ -662,97 +665,11 @@ function WindUI:CreateTab(options)
 	tabContentLayout.Padding = UDim.new(0, 12)
 	tabContentLayout.Parent = tabContent
 	
-	-- Optimized canvas size update with throttling and error handling
-	-- Only update canvas for visible tabs to prevent performance issues
-	local updateCanvasSize
-	local canvasUpdatePending = false
-	
-	updateCanvasSize = function()
-		-- Only update if tab is visible
-		if not tabContent.Visible then return end
-		if canvasUpdatePending then return end
-		canvasUpdatePending = true
-		
-		task.spawn(function()
-			local success, err = pcall(function()
-				task.wait(0.01) -- Small delay to batch updates
-				canvasUpdatePending = false
-				
-				-- Double-check visibility before updating
-				if tabContent and tabContent.Parent and tabContentLayout and tabContent.Visible then
-					local success2, contentSize, err2 = pcall(function()
-						return tabContentLayout.AbsoluteContentSize
-					end)
-					
-					if not success2 then
-						warn("[WindUI Canvas Update Error] Failed to get AbsoluteContentSize:", err2)
-						return
-					end
-					
-					if contentSize and typeof(contentSize) == "Vector2" then
-						local ySize = contentSize.Y
-						-- Check for valid number (not NaN or infinity)
-						if ySize and ySize == ySize and ySize ~= math.huge and ySize ~= -math.huge then
-							local newSize = math.max(0, math.min(ySize + 15, 1000000))
-							local success3, err3 = pcall(function()
-								tabContent.CanvasSize = UDim2.new(0, 0, 0, newSize)
-							end)
-							if not success3 then
-								warn("[WindUI Canvas Update Error] Failed to set CanvasSize:", err3, "Size:", newSize)
-							end
-						else
-							warn("[WindUI Canvas Update Error] Invalid ySize:", ySize, "Type:", typeof(ySize))
-						end
-					else
-						warn("[WindUI Canvas Update Error] Invalid contentSize:", contentSize, "Type:", typeof(contentSize))
-					end
-				end
-			end)
-			if not success then
-				warn("[WindUI Canvas Update Error] updateCanvasSize failed:", err)
-			end
-		end)
-	end
-	
-	-- Store connection for potential cleanup
-	local contentSizeConnection = tabContentLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateCanvasSize)
-	
-	-- Also update when child is added (with delay) - only if visible
-	tabContent.ChildAdded:Connect(function(child)
-		local success, err = pcall(function()
-			if not tabContent.Visible then return end
-			task.spawn(function()
-				local success2, err2 = pcall(function()
-					task.wait(0.05) -- Wait for layout to update
-					updateCanvasSize()
-				end)
-				if not success2 then
-					warn("[WindUI ChildAdded Error] Failed to update canvas:", err2)
-				end
-			end)
-		end)
-		if not success then
-			warn("[WindUI ChildAdded Error] Connection handler failed:", err)
-		end
-	end)
-	
-	-- Update canvas when tab becomes visible
-	tabContent:GetPropertyChangedSignal("Visible"):Connect(function()
-		local success, err = pcall(function()
-			if tabContent.Visible then
-				task.spawn(function()
-					local success2, err2 = pcall(function()
-						task.wait(0.1)
-						updateCanvasSize()
-					end)
-					if not success2 then
-						warn("[WindUI Visible Change Error] Failed to update canvas:", err2)
-					end
-				end)
-			end
-		end)
-		if not success then
-			warn("[WindUI Visible Change Error] Connection handler failed:", err)
+	-- Simple canvas size update - same approach as tab container
+	-- Auto-update canvas size when content changes
+	tabContentLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+		if tabContent and tabContentLayout then
+			tabContent.CanvasSize = UDim2.new(0, 0, 0, tabContentLayout.AbsoluteContentSize.Y + 15)
 		end
 	end)
 	
@@ -797,25 +714,6 @@ function WindUI:CreateTab(options)
 		textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 		tabContent.Visible = true
 		self.CurrentTab = name
-		
-		-- Force canvas update when tab becomes visible
-		task.spawn(function()
-			task.wait(0.1)
-			if tabContent.Visible and tabContentLayout then
-				local success, contentSize = pcall(function()
-					return tabContentLayout.AbsoluteContentSize
-				end)
-				if success and contentSize and typeof(contentSize) == "Vector2" then
-					local ySize = contentSize.Y
-					if ySize and ySize == ySize and ySize ~= math.huge and ySize ~= -math.huge then
-						local newSize = math.max(0, math.min(ySize + 15, 1000000))
-						pcall(function()
-							tabContent.CanvasSize = UDim2.new(0, 0, 0, newSize)
-						end)
-					end
-				end
-			end
-		end)
 	end)
 	
 	-- Only show hover effect if tab is not locked
@@ -855,7 +753,7 @@ function WindUI:CreateTab(options)
 			return createLabel(options, tabContent)
 		end,
 		Button = function(_, options)
-			print("[WindUI] Button method called!")
+			warn("[WindUI] ===== Button method called! =====")
 			-- Pass ScreenGui and MainFrame reference to button
 			options._screenGui = self.ScreenGui
 			options._mainFrame = self._mainFrame
@@ -865,13 +763,13 @@ function WindUI:CreateTab(options)
 				warn("[WindUI Button Error] tabContent:", tabContent, "tabContent.Parent:", tabContent and tabContent.Parent)
 				return nil
 			end
-			print("[WindUI] Calling createButton function...")
+			warn("[WindUI] Calling createButton function...")
 			local result = createButton(options, tabContent)
-			print("[WindUI] createButton returned:", result)
+			warn("[WindUI] createButton returned:", result)
 			return result
 		end,
 		Toggle = function(_, options)
-			print("[WindUI] Toggle method called!")
+			warn("[WindUI] ===== Toggle method called! =====")
 			-- Pass ScreenGui and MainFrame reference to toggle
 			options._screenGui = self.ScreenGui
 			options._mainFrame = self._mainFrame
@@ -881,9 +779,9 @@ function WindUI:CreateTab(options)
 				warn("[WindUI Toggle Error] tabContent:", tabContent, "tabContent.Parent:", tabContent and tabContent.Parent)
 				return nil
 			end
-			print("[WindUI] Calling createToggle function...")
+			warn("[WindUI] Calling createToggle function...")
 			local result = createToggle(options, tabContent)
-			print("[WindUI] createToggle returned:", result)
+			warn("[WindUI] createToggle returned:", result)
 			return result
 		end,
 		Slider = function(_, options)
@@ -937,9 +835,10 @@ function createLabel(options, parent)
 end
 
 function createButton(options, parent)
-	print("[WindUI] createButton function ENTRY - options:", options, "parent:", parent)
+	warn("[WindUI] ===== createButton function ENTRY =====")
+	warn("[WindUI] options:", options, "parent:", parent)
 	local success, result, err = pcall(function()
-		print("[WindUI] createButton pcall STARTED")
+		warn("[WindUI] createButton pcall STARTED")
 		options = options or {}
 		-- Support both Name and Title parameters
 		local text = options.Name or options.Title or "Button"
@@ -959,7 +858,7 @@ function createButton(options, parent)
 		
 		-- Count children before creation
 		local childCount = #parent:GetChildren()
-		print("[WindUI] Creating button:", text, "Current children in parent:", childCount)
+		warn("[WindUI] Creating button:", text, "Current children in parent:", childCount)
 		
 		local button = Instance.new("TextButton")
 	button.Name = randomName()
@@ -986,7 +885,7 @@ function createButton(options, parent)
 		return nil
 	end
 	
-	print("[WindUI] Button created successfully:", text)
+		warn("[WindUI] Button created successfully:", text)
 	
 	local corner = Instance.new("UICorner")
 	corner.Name = randomName()
@@ -1046,9 +945,9 @@ function createButton(options, parent)
 		return button
 	end)
 	
-	print("[WindUI] createButton pcall completed - success:", success, "result:", result)
+	warn("[WindUI] createButton pcall completed - success:", success, "result:", result)
 	if success then
-		print("[WindUI] createButton returning result:", result)
+		warn("[WindUI] createButton returning result:", result)
 		return result
 	else
 		warn("[WindUI Button Error] createButton crashed:", err)
@@ -1058,9 +957,10 @@ function createButton(options, parent)
 end
 
 function createToggle(options, parent)
-	print("[WindUI] createToggle function ENTRY - options:", options, "parent:", parent)
+	warn("[WindUI] ===== createToggle function ENTRY =====")
+	warn("[WindUI] options:", options, "parent:", parent)
 	local success, result, err = pcall(function()
-		print("[WindUI] createToggle pcall STARTED")
+		warn("[WindUI] createToggle pcall STARTED")
 		options = options or {}
 		-- Support both Name and Title parameters
 		local text = options.Name or options.Title or "Toggle"
@@ -1082,7 +982,7 @@ function createToggle(options, parent)
 		
 		-- Count children before creation
 		local childCount = #parent:GetChildren()
-		print("[WindUI] Creating toggle:", text, "Current children in parent:", childCount)
+		warn("[WindUI] Creating toggle:", text, "Current children in parent:", childCount)
 		
 		local toggleFrame = Instance.new("Frame")
 		toggleFrame.Name = randomName()
