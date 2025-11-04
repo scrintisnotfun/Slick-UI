@@ -855,26 +855,36 @@ function WindUI:CreateTab(options)
 			return createLabel(options, tabContent)
 		end,
 		Button = function(_, options)
+			print("[WindUI] Button method called!")
 			-- Pass ScreenGui and MainFrame reference to button
 			options._screenGui = self.ScreenGui
 			options._mainFrame = self._mainFrame
 			-- Validate parent before creation
 			if not tabContent or not tabContent.Parent then
-				warn("WindUI: Cannot create button - tab content is invalid")
+				warn("[WindUI Button Error] Cannot create button - tab content is invalid")
+				warn("[WindUI Button Error] tabContent:", tabContent, "tabContent.Parent:", tabContent and tabContent.Parent)
 				return nil
 			end
-			return createButton(options, tabContent)
+			print("[WindUI] Calling createButton function...")
+			local result = createButton(options, tabContent)
+			print("[WindUI] createButton returned:", result)
+			return result
 		end,
 		Toggle = function(_, options)
+			print("[WindUI] Toggle method called!")
 			-- Pass ScreenGui and MainFrame reference to toggle
 			options._screenGui = self.ScreenGui
 			options._mainFrame = self._mainFrame
 			-- Validate parent before creation
 			if not tabContent or not tabContent.Parent then
-				warn("WindUI: Cannot create toggle - tab content is invalid")
+				warn("[WindUI Toggle Error] Cannot create toggle - tab content is invalid")
+				warn("[WindUI Toggle Error] tabContent:", tabContent, "tabContent.Parent:", tabContent and tabContent.Parent)
 				return nil
 			end
-			return createToggle(options, tabContent)
+			print("[WindUI] Calling createToggle function...")
+			local result = createToggle(options, tabContent)
+			print("[WindUI] createToggle returned:", result)
+			return result
 		end,
 		Slider = function(_, options)
 			return createSlider(options, tabContent)
@@ -927,7 +937,9 @@ function createLabel(options, parent)
 end
 
 function createButton(options, parent)
+	print("[WindUI] createButton function ENTRY - options:", options, "parent:", parent)
 	local success, result, err = pcall(function()
+		print("[WindUI] createButton pcall STARTED")
 		options = options or {}
 		-- Support both Name and Title parameters
 		local text = options.Name or options.Title or "Button"
@@ -1034,7 +1046,9 @@ function createButton(options, parent)
 		return button
 	end)
 	
+	print("[WindUI] createButton pcall completed - success:", success, "result:", result)
 	if success then
+		print("[WindUI] createButton returning result:", result)
 		return result
 	else
 		warn("[WindUI Button Error] createButton crashed:", err)
@@ -1044,7 +1058,9 @@ function createButton(options, parent)
 end
 
 function createToggle(options, parent)
+	print("[WindUI] createToggle function ENTRY - options:", options, "parent:", parent)
 	local success, result, err = pcall(function()
+		print("[WindUI] createToggle pcall STARTED")
 		options = options or {}
 		-- Support both Name and Title parameters
 		local text = options.Name or options.Title or "Toggle"
@@ -1198,7 +1214,9 @@ function createToggle(options, parent)
 		return toggleFrame
 	end)
 	
+	print("[WindUI] createToggle pcall completed - success:", success, "result:", result)
 	if success then
+		print("[WindUI] createToggle returning result:", result)
 		return result
 	else
 		warn("[WindUI Toggle Error] createToggle crashed:", err)
