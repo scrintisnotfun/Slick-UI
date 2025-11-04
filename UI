@@ -674,25 +674,42 @@ function WindUI:CreateTab(options)
 		canvasUpdatePending = true
 		
 		task.spawn(function()
-			task.wait(0.01) -- Small delay to batch updates
-			canvasUpdatePending = false
-			
-			-- Double-check visibility before updating
-			if tabContent and tabContent.Parent and tabContentLayout and tabContent.Visible then
-				local success, contentSize = pcall(function()
-					return tabContentLayout.AbsoluteContentSize
-				end)
+			local success, err = pcall(function()
+				task.wait(0.01) -- Small delay to batch updates
+				canvasUpdatePending = false
 				
-				if success and contentSize and typeof(contentSize) == "Vector2" then
-					local ySize = contentSize.Y
-					-- Check for valid number (not NaN or infinity)
-					if ySize and ySize == ySize and ySize ~= math.huge and ySize ~= -math.huge then
-						local newSize = math.max(0, math.min(ySize + 15, 1000000))
-						pcall(function()
-							tabContent.CanvasSize = UDim2.new(0, 0, 0, newSize)
-						end)
+				-- Double-check visibility before updating
+				if tabContent and tabContent.Parent and tabContentLayout and tabContent.Visible then
+					local success2, contentSize, err2 = pcall(function()
+						return tabContentLayout.AbsoluteContentSize
+					end)
+					
+					if not success2 then
+						warn("[WindUI Canvas Update Error] Failed to get AbsoluteContentSize:", err2)
+						return
+					end
+					
+					if contentSize and typeof(contentSize) == "Vector2" then
+						local ySize = contentSize.Y
+						-- Check for valid number (not NaN or infinity)
+						if ySize and ySize == ySize and ySize ~= math.huge and ySize ~= -math.huge then
+							local newSize = math.max(0, math.min(ySize + 15, 1000000))
+							local success3, err3 = pcall(function()
+								tabContent.CanvasSize = UDim2.new(0, 0, 0, newSize)
+							end)
+							if not success3 then
+								warn("[WindUI Canvas Update Error] Failed to set CanvasSize:", err3, "Size:", newSize)
+							end
+						else
+							warn("[WindUI Canvas Update Error] Invalid ySize:", ySize, "Type:", typeof(ySize))
+						end
+					else
+						warn("[WindUI Canvas Update Error] Invalid contentSize:", contentSize, "Type:", typeof(contentSize))
 					end
 				end
+			end)
+			if not success then
+				warn("[WindUI Canvas Update Error] updateCanvasSize failed:", err)
 			end
 		end)
 	end
@@ -702,20 +719,40 @@ function WindUI:CreateTab(options)
 	
 	-- Also update when child is added (with delay) - only if visible
 	tabContent.ChildAdded:Connect(function(child)
-		if not tabContent.Visible then return end
-		task.spawn(function()
-			task.wait(0.05) -- Wait for layout to update
-			updateCanvasSize()
+		local success, err = pcall(function()
+			if not tabContent.Visible then return end
+			task.spawn(function()
+				local success2, err2 = pcall(function()
+					task.wait(0.05) -- Wait for layout to update
+					updateCanvasSize()
+				end)
+				if not success2 then
+					warn("[WindUI ChildAdded Error] Failed to update canvas:", err2)
+				end
+			end)
 		end)
+		if not success then
+			warn("[WindUI ChildAdded Error] Connection handler failed:", err)
+		end
 	end)
 	
 	-- Update canvas when tab becomes visible
 	tabContent:GetPropertyChangedSignal("Visible"):Connect(function()
-		if tabContent.Visible then
-			task.spawn(function()
-				task.wait(0.1)
-				updateCanvasSize()
-			end)
+		local success, err = pcall(function()
+			if tabContent.Visible then
+				task.spawn(function()
+					local success2, err2 = pcall(function()
+						task.wait(0.1)
+						updateCanvasSize()
+					end)
+					if not success2 then
+						warn("[WindUI Visible Change Error] Failed to update canvas:", err2)
+					end
+				end)
+			end
+		end)
+		if not success then
+			warn("[WindUI Visible Change Error] Connection handler failed:", err)
 		end
 	end)
 	
@@ -890,23 +927,29 @@ function createLabel(options, parent)
 end
 
 function createButton(options, parent)
-	options = options or {}
-	-- Support both Name and Title parameters
-	local text = options.Name or options.Title or "Button"
-	local callback = options.Callback
-	-- Added Locked parameter for locked buttons
-	local locked = options.Locked or false
-	-- Get ScreenGui and MainFrame reference for popup
-	local screenGui = options._screenGui
-	local mainFrame = options._mainFrame
-	
-	-- Safety check: ensure parent exists and is valid
-	if not parent or not parent.Parent then
-		warn("WindUI: Cannot create button - parent is invalid")
-		return nil
-	end
-	
-	local button = Instance.new("TextButton")
+	local success, result, err = pcall(function()
+		options = options or {}
+		-- Support both Name and Title parameters
+		local text = options.Name or options.Title or "Button"
+		local callback = options.Callback
+		-- Added Locked parameter for locked buttons
+		local locked = options.Locked or false
+		-- Get ScreenGui and MainFrame reference for popup
+		local screenGui = options._screenGui
+		local mainFrame = options._mainFrame
+		
+		-- Safety check: ensure parent exists and is valid
+		if not parent or not parent.Parent then
+			warn("[WindUI Button Error] Cannot create button - parent is invalid")
+			warn("[WindUI Button Error] Parent:", parent, "Parent.Parent:", parent and parent.Parent)
+			return nil
+		end
+		
+		-- Count children before creation
+		local childCount = #parent:GetChildren()
+		print("[WindUI] Creating button:", text, "Current children in parent:", childCount)
+		
+		local button = Instance.new("TextButton")
 	button.Name = randomName()
 	button.Size = UDim2.new(0, 200, 0, 38)
 	-- Different color for locked buttons
@@ -921,14 +964,17 @@ function createButton(options, parent)
 	button.ZIndex = 2
 	
 	-- Safely set parent with error handling
-	local success = pcall(function()
+	local success, err = pcall(function()
 		button.Parent = parent
 	end)
 	if not success then
 		button:Destroy()
-		warn("WindUI: Failed to parent button - parent may be destroyed")
+		warn("[WindUI Button Error] Failed to parent button:", err)
+		warn("[WindUI Button Error] Parent exists:", parent ~= nil, "Parent.Parent exists:", parent and parent.Parent ~= nil)
 		return nil
 	end
+	
+	print("[WindUI] Button created successfully:", text)
 	
 	local corner = Instance.new("UICorner")
 	corner.Name = randomName()
@@ -985,45 +1031,63 @@ function createButton(options, parent)
 		end
 	end
 	
-	return button
+		return button
+	end)
+	
+	if success then
+		return result
+	else
+		warn("[WindUI Button Error] createButton crashed:", err)
+		warn(debug.traceback())
+		return nil
+	end
 end
 
 function createToggle(options, parent)
-	options = options or {}
-	-- Support both Name and Title parameters
-	local text = options.Name or options.Title or "Toggle"
-	local default = options.Default or false
-	local callback = options.Callback
-	-- Added Locked parameter for locked toggles
-	local locked = options.Locked or false
-	-- Get ScreenGui reference for popup
-	local screenGui = options._screenGui
-	-- Get MainFrame reference for popup positioning
-	local mainFrame = options._mainFrame
-	
-	-- Safety check: ensure parent exists and is valid
-	if not parent or not parent.Parent then
-		warn("WindUI: Cannot create toggle - parent is invalid")
-		return nil
-	end
-	
-	local toggleFrame = Instance.new("Frame")
-	toggleFrame.Name = randomName()
-	toggleFrame.Size = UDim2.new(1, 0, 0, 40)
-	-- Reverted to normal background color for locked toggles
-	toggleFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-	toggleFrame.BorderSizePixel = 0
-	toggleFrame.ZIndex = 2
-	
-	-- Safely set parent with error handling
-	local success = pcall(function()
-		toggleFrame.Parent = parent
-	end)
-	if not success then
-		toggleFrame:Destroy()
-		warn("WindUI: Failed to parent toggle - parent may be destroyed")
-		return nil
-	end
+	local success, result, err = pcall(function()
+		options = options or {}
+		-- Support both Name and Title parameters
+		local text = options.Name or options.Title or "Toggle"
+		local default = options.Default or false
+		local callback = options.Callback
+		-- Added Locked parameter for locked toggles
+		local locked = options.Locked or false
+		-- Get ScreenGui reference for popup
+		local screenGui = options._screenGui
+		-- Get MainFrame reference for popup positioning
+		local mainFrame = options._mainFrame
+		
+		-- Safety check: ensure parent exists and is valid
+		if not parent or not parent.Parent then
+			warn("[WindUI Toggle Error] Cannot create toggle - parent is invalid")
+			warn("[WindUI Toggle Error] Parent:", parent, "Parent.Parent:", parent and parent.Parent)
+			return nil
+		end
+		
+		-- Count children before creation
+		local childCount = #parent:GetChildren()
+		print("[WindUI] Creating toggle:", text, "Current children in parent:", childCount)
+		
+		local toggleFrame = Instance.new("Frame")
+		toggleFrame.Name = randomName()
+		toggleFrame.Size = UDim2.new(1, 0, 0, 40)
+		-- Reverted to normal background color for locked toggles
+		toggleFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+		toggleFrame.BorderSizePixel = 0
+		toggleFrame.ZIndex = 2
+		
+		-- Safely set parent with error handling
+		local success2, err2 = pcall(function()
+			toggleFrame.Parent = parent
+		end)
+		if not success2 then
+			toggleFrame:Destroy()
+			warn("[WindUI Toggle Error] Failed to parent toggle:", err2)
+			warn("[WindUI Toggle Error] Parent exists:", parent ~= nil, "Parent.Parent exists:", parent and parent.Parent ~= nil)
+			return nil
+		end
+		
+		print("[WindUI] Toggle created successfully:", text)
 	
 	local frameCorner = Instance.new("UICorner")
 	frameCorner.Name = randomName()
@@ -1129,9 +1193,18 @@ function createToggle(options, parent)
 		updateToggle(true)
 	end)
 	
-	updateToggle(false)
+		updateToggle(false)
+		
+		return toggleFrame
+	end)
 	
-	return toggleFrame
+	if success then
+		return result
+	else
+		warn("[WindUI Toggle Error] createToggle crashed:", err)
+		warn(debug.traceback())
+		return nil
+	end
 end
 
 function createSlider(options, parent)
