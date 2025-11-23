@@ -226,21 +226,6 @@ local function randomName()
     return name
 end
 
--- UI Protection: Move to CoreGui/gethui and protect
-local function create_stealth_gui(ScreenGui)
-	-- Layer 1: Hide from standard enumeration
-	if gethui then
-		ScreenGui.Parent = gethui()
-	else
-		ScreenGui.Parent = game:GetService("CoreGui")
-	end
-	
-	-- Layer 2: Metatable protection  
-	if protect_gui then
-		protect_gui(ScreenGui)
-	end
-end
-
 function WindUI:CreateWindow(options)
 	local self = setmetatable({}, WindUI)
 	
@@ -254,14 +239,15 @@ function WindUI:CreateWindow(options)
 		size = options.Size or {850, 500}
 	end
 	
+	local player = Players.LocalPlayer
+	local playerGui = player:WaitForChild("PlayerGui")
+	
 	-- Create ScreenGui
 	self.ScreenGui = Instance.new("ScreenGui")
 	self.ScreenGui.Name = randomName()
 	self.ScreenGui.ResetOnSpawn = false
 	self.ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-	
-	-- Apply stealth GUI protection (moves to CoreGui/gethui and protects)
-	create_stealth_gui(self.ScreenGui)
+	self.ScreenGui.Parent = playerGui
 	
 	-- Store ScreenGui reference for popup creation
 	self._screenGui = self.ScreenGui
